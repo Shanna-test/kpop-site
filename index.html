@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>K-POP Hub | 트렌드와 음악을 한 곳에서</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Noto Sans KR', 'Poppins', sans-serif;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            min-height: 100vh;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        }
+
+        .glass-strong {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(30px) saturate(180%);
+            -webkit-backdrop-filter: blur(30px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.5),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(25px) saturate(180%);
+            -webkit-backdrop-filter: blur(25px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.15);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .glass-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 20px 60px 0 rgba(31, 38, 135, 0.5),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.25);
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #ff006e, #8338ec, #3a86ff, #ffbe0b);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientText 5s ease infinite;
+        }
+
+        @keyframes gradientText {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .fade-in-up {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+
+        .fade-in-up.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in {
+            opacity: 0;
+            transition: opacity 1s ease-out;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+        }
+
+        .fade-in-delay-1 { transition-delay: 0.1s; }
+        .fade-in-delay-2 { transition-delay: 0.2s; }
+        .fade-in-delay-3 { transition-delay: 0.3s; }
+        .fade-in-delay-4 { transition-delay: 0.4s; }
+        .fade-in-delay-5 { transition-delay: 0.5s; }
+        .fade-in-delay-6 { transition-delay: 0.6s; }
+
+        .artist-card {
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .artist-card:hover {
+            transform: translateY(-12px) scale(1.03);
+        }
+
+        .artist-image {
+            width: 100%;
+            height: 280px;
+            object-fit: cover;
+            transition: transform 0.4s ease;
+        }
+
+        .artist-card:hover .artist-image {
+            transform: scale(1.1);
+        }
+
+        .music-player-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .music-player-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(255, 0, 110, 0.5);
+        }
+
+        .play-button {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(255, 0, 110, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .play-button:hover {
+            background: rgba(255, 0, 110, 1);
+            transform: scale(1.1);
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 60px;
+            height: 4px;
+            background: linear-gradient(90deg, #ff006e, #8338ec);
+            border-radius: 2px;
+        }
+
+        .floating-circle {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            animation: floatCircle 20s infinite ease-in-out;
+            pointer-events: none;
+        }
+
+        @keyframes floatCircle {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            33% { transform: translate(30px, -30px) rotate(120deg); }
+            66% { transform: translate(-20px, 20px) rotate(240deg); }
+        }
+
+        /* 가독성 향상 */
+        .content-text {
+            line-height: 1.8;
+            font-size: 1.1rem;
+        }
+
+        .heading-large {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            line-height: 1.2;
+            letter-spacing: -0.02em;
+        }
+
+        /* Navbar Styles */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .navbar.scrolled {
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .nav-link {
+            position: relative;
+            transition: all 0.3s ease;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%) scaleX(0);
+            width: 80%;
+            height: 2px;
+            background: linear-gradient(90deg, #ff006e, #8338ec);
+            transition: transform 0.3s ease;
+        }
+
+        .nav-link:hover::after,
+        .nav-link.active::after {
+            transform: translateX(-50%) scaleX(1);
+        }
+
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .mobile-menu {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .mobile-menu {
+                display: block;
+            }
+            .desktop-menu {
+                display: none;
+            }
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            margin-top: 0.5rem;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(30px) saturate(180%);
+            -webkit-backdrop-filter: blur(30px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 1rem;
+            padding: 0.5rem;
+            min-width: 250px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+        }
+
+        .dropdown:hover .dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-item {
+            display: block;
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            transition: all 0.2s ease;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .dropdown-item:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateX(5px);
+        }
+    </style>
+</head>
+<body class="relative overflow-x-hidden">
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16 lg:h-20">
+                <!-- Logo -->
+                <a href="index.html" class="flex items-center gap-3">
+                    <img 
+                        src="https://upload.wikimedia.org/wikipedia/commons/0/09/Flag_of_South_Korea.svg" 
+                        alt="대한민국 국기" 
+                        class="w-8 h-8 sm:w-10 sm:h-10"
+                    >
+                    <span class="text-xl sm:text-2xl font-black gradient-text">K-POP HUB</span>
+                </a>
+
+                <!-- Desktop Menu -->
+                <div class="desktop-menu flex items-center gap-2 lg:gap-4">
+                    <a href="index.html" class="nav-link active text-white font-medium">홈</a>
+                    <div class="dropdown relative">
+                        <a href="artists.html" class="nav-link text-white font-medium flex items-center gap-1">
+                            인기 아티스트
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </a>
+                        <div class="dropdown-menu">
+                            <a href="artists.html#bts" class="dropdown-item flex items-center gap-3">
+                                <span class="text-2xl">💜</span>
+                                <div>
+                                    <div class="font-semibold">BTS</div>
+                                    <div class="text-xs text-white/70">방탄소년단</div>
+                                </div>
+                            </a>
+                            <a href="artists.html#blackpink" class="dropdown-item flex items-center gap-3">
+                                <span class="text-2xl">🖤</span>
+                                <div>
+                                    <div class="font-semibold">BLACKPINK</div>
+                                    <div class="text-xs text-white/70">블랙핑크</div>
+                                </div>
+                            </a>
+                            <a href="artists.html#newjeans" class="dropdown-item flex items-center gap-3">
+                                <span class="text-2xl">🐰</span>
+                                <div>
+                                    <div class="font-semibold">NewJeans</div>
+                                    <div class="text-xs text-white/70">뉴진스</div>
+                                </div>
+                            </a>
+                            <a href="artists.html#ive" class="dropdown-item flex items-center gap-3">
+                                <span class="text-2xl">⭐</span>
+                                <div>
+                                    <div class="font-semibold">IVE</div>
+                                    <div class="text-xs text-white/70">아이브</div>
+                                </div>
+                            </a>
+                            <a href="artists.html#lesserafim" class="dropdown-item flex items-center gap-3">
+                                <span class="text-2xl">🔥</span>
+                                <div>
+                                    <div class="font-semibold">LE SSERAFIM</div>
+                                    <div class="text-xs text-white/70">르세라핌</div>
+                                </div>
+                            </a>
+                            <a href="artists.html#aespa" class="dropdown-item flex items-center gap-3">
+                                <span class="text-2xl">✨</span>
+                                <div>
+                                    <div class="font-semibold">aespa</div>
+                                    <div class="text-xs text-white/70">에스파</div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <button id="mobile-menu-btn" class="mobile-menu lg:hidden text-white p-2">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Mobile Menu -->
+            <div id="mobile-menu" class="mobile-menu hidden lg:hidden pb-4">
+                <div class="flex flex-col gap-2 mt-2">
+                    <a href="index.html" class="nav-link text-white font-medium">홈</a>
+                    <div class="border-t border-white/20 pt-2 mt-2">
+                        <div class="text-white/70 text-sm font-semibold mb-2 px-4">인기 아티스트</div>
+                        <a href="artists.html#bts" class="nav-link text-white/90 text-sm flex items-center gap-2 px-4">
+                            <span>💜</span> BTS
+                        </a>
+                        <a href="artists.html#blackpink" class="nav-link text-white/90 text-sm flex items-center gap-2 px-4">
+                            <span>🖤</span> BLACKPINK
+                        </a>
+                        <a href="artists.html#newjeans" class="nav-link text-white/90 text-sm flex items-center gap-2 px-4">
+                            <span>🐰</span> NewJeans
+                        </a>
+                        <a href="artists.html#ive" class="nav-link text-white/90 text-sm flex items-center gap-2 px-4">
+                            <span>⭐</span> IVE
+                        </a>
+                        <a href="artists.html#lesserafim" class="nav-link text-white/90 text-sm flex items-center gap-2 px-4">
+                            <span>🔥</span> LE SSERAFIM
+                        </a>
+                        <a href="artists.html#aespa" class="nav-link text-white/90 text-sm flex items-center gap-2 px-4">
+                            <span>✨</span> aespa
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <!-- Animated Background Circles -->
+    <div class="floating-circle w-72 h-72 top-10 left-10 opacity-30"></div>
+    <div class="floating-circle w-48 h-48 top-1/2 right-20 opacity-20" style="animation-delay: 5s;"></div>
+    <div class="floating-circle w-36 h-36 bottom-20 left-1/4 opacity-25" style="animation-delay: 10s;"></div>
+
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-12 relative z-10 pt-24 lg:pt-28">
+        <!-- Hero Section -->
+        <header class="text-center mb-16">
+            <div class="flex items-center justify-center gap-6 mb-8 fade-in-up" style="animation: fadeInUp 1s ease-out 0.2s forwards;">
+                <img 
+                    src="https://upload.wikimedia.org/wikipedia/commons/0/09/Flag_of_South_Korea.svg" 
+                    alt="대한민국 국기" 
+                    class="w-20 h-20 sm:w-28 sm:h-28 drop-shadow-2xl"
+                >
+                <h1 class="heading-large font-black gradient-text">
+                    K-POP HUB
+                </h1>
+            </div>
+            <p class="text-2xl sm:text-3xl text-white/90 font-light tracking-wide mb-6 fade-in-up" style="animation: fadeInUp 1s ease-out 0.4s forwards;">
+                트렌드와 음악을 한 곳에서
+            </p>
+        </header>
+
+        <!-- Top 10 Music Player Section -->
+        <section class="glass-card rounded-3xl p-8 sm:p-12 lg:p-16 mb-12 fade-in-up">
+            <h2 class="text-4xl sm:text-5xl font-bold mb-8 gradient-text section-title relative inline-block pb-4 fade-in fade-in-delay-1">
+                🎵 TOP 10 히트곡
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Top 10 Songs - Click to open YouTube in new tab -->
+                <a href="https://www.youtube.com/watch?v=VDd9gN8eS-s" target="_blank" rel="noopener noreferrer" class="music-player-card glass-strong rounded-xl p-4 border border-white/20 fade-in fade-in-delay-1 block">
+                    <div class="flex items-center gap-4">
+                        <div class="play-button flex-shrink-0">
+                            <svg class="w-6 h-6 text-white ml-1" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"/>
+                            </svg>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-white font-semibold text-lg truncate">1. Dynamite - BTS</p>
+                            <p class="text-white/70 text-sm">방탄소년단</p>
+                        </div>
+                    </div>
+                </a>
+                <a href="https://www.youtube.com/watch?v=ioNng23DkIM" target="_blank" rel="noopener noreferrer" class="music-player-card glass-strong rounded-xl p-4 border border-white/20 fade-in fade-in-delay-2 block">
+                    <div class="flex items-center gap-4">
+                        <div class="play-button flex-shrink-0">
+                            <svg class="w-6 h-6 text-white ml-1" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"/>
+                            </svg>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-white font-semibold text-lg truncate">2. How You Like That - BLACKPINK</p>
+                            <p class="text-white/70 text-sm">블랙핑크</p>
+                        </div>
+                    </div>
+                </a>
+                <a href="https://www.youtube.com/watch?v=ArmDp-zijuc" target="_blank" rel="noopener noreferrer" class="music-player-card glass-strong rounded-xl p-4 border border-white/20 fade-in fade-in-delay-3 block">
+                    <div class="flex items-center gap-4">
+                        <div class="play-button flex-shrink-0">
+                            <svg class="w-6 h-6 text-white ml-1" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"/>
+                            </svg>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-white font-semibold text-lg truncate">3. Hype Boy - NewJeans</p>
+                            <p class="text-white/70 text-sm">뉴진스</p>
+                        </div>
+                    </div>
+                </a>
+                <a href="https://www.youtube.com/watch?v=6ZUIwZ3f1ZCc" target="_blank" rel="noopener noreferrer" class="music-player-card glass-strong rounded-xl p-4 border border-white/20 fade-in fade-in-delay-4 block">
+                    <div class="flex items-center gap-4">
+                        <div class="play-button flex-shrink-0">
+                            <svg class="w-6 h-6 text-white ml-1" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"/>
+                            </svg>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-white font-semibold text-lg truncate">4. I AM - IVE</p>
+                            <p class="text-white/70 text-sm">아이브</p>
+                        </div>
+                    </div>
+                </a>
+                <a href="https://www.youtube.com/watch?v=ru3gH27Fn6E" target="_blank" rel="noopener noreferrer" class="music-player-card glass-strong rounded-xl p-4 border border-white/20 fade-in fade-in-delay-5 block">
+                    <div class="flex items-center gap-4">
+                        <div class="play-button flex-shrink-0">
+                            <svg class="w-6 h-6 text-white ml-1" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"/>
+                            </svg>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-white font-semibold text-lg truncate">5. UNFORGIVEN - LE SSERAFIM</p>
+                            <p class="text-white/70 text-sm">르세라핌</p>
+                        </div>
+                    </div>
+                </a>
+                <a href="https://www.youtube.com/watch?v=4TWR90KUlWk" target="_blank" rel="noopener noreferrer" class="music-player-card glass-strong rounded-xl p-4 border border-white/20 fade-in fade-in-delay-6 block">
+                    <div class="flex items-center gap-4">
+                        <div class="play-button flex-shrink-0">
+                            <svg class="w-6 h-6 text-white ml-1" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"/>
+                            </svg>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-white font-semibold text-lg truncate">6. Next Level - aespa</p>
+                            <p class="text-white/70 text-sm">에스파</p>
+                        </div>
+                    </div>
+                </a>
+                <a href="https://www.youtube.com/watch?v=WMweEpGlu_U" target="_blank" rel="noopener noreferrer" class="music-player-card glass-strong rounded-xl p-4 border border-white/20 fade-in fade-in-delay-1 block">
+                    <div class="flex items-center gap-4">
+                        <div class="play-button flex-shrink-0">
+                            <svg class="w-6 h-6 text-white ml-1" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"/>
+                            </svg>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-white font-semibold text-lg truncate">7. Butter - BTS</p>
+                            <p class="text-white/70 text-sm">방탄소년단</p>
+                        </div>
+                    </div>
+                </a>
+                <a href="https://www.youtube.com/watch?v=9pdj4iEdc1I" target="_blank" rel="noopener noreferrer" class="music-player-card glass-strong rounded-xl p-4 border border-white/20 fade-in fade-in-delay-2 block">
+                    <div class="flex items-center gap-4">
+                        <div class="play-button flex-shrink-0">
+                            <svg class="w-6 h-6 text-white ml-1" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"/>
+                            </svg>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-white font-semibold text-lg truncate">8. Pink Venom - BLACKPINK</p>
+                            <p class="text-white/70 text-sm">블랙핑크</p>
+                        </div>
+                    </div>
+                </a>
+                <a href="https://www.youtube.com/watch?v=XsX3ATc3FbA" target="_blank" rel="noopener noreferrer" class="music-player-card glass-strong rounded-xl p-4 border border-white/20 fade-in fade-in-delay-3 block">
+                    <div class="flex items-center gap-4">
+                        <div class="play-button flex-shrink-0">
+                            <svg class="w-6 h-6 text-white ml-1" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"/>
+                            </svg>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-white font-semibold text-lg truncate">9. OMG - NewJeans</p>
+                            <p class="text-white/70 text-sm">뉴진스</p>
+                        </div>
+                    </div>
+                </a>
+                <a href="https://www.youtube.com/watch?v=fHONcsP_CMs" target="_blank" rel="noopener noreferrer" class="music-player-card glass-strong rounded-xl p-4 border border-white/20 fade-in fade-in-delay-4 block">
+                    <div class="flex items-center gap-4">
+                        <div class="play-button flex-shrink-0">
+                            <svg class="w-6 h-6 text-white ml-1" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"/>
+                            </svg>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-white font-semibold text-lg truncate">10. Love Dive - IVE</p>
+                            <p class="text-white/70 text-sm">아이브</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <!-- Popular Artists Section -->
+        <section class="glass-card rounded-3xl p-8 sm:p-12 lg:p-16 mb-12 fade-in-up">
+            <h2 class="text-4xl sm:text-5xl font-bold mb-10 gradient-text section-title relative inline-block pb-4 fade-in fade-in-delay-1">
+                ⭐ 인기 아티스트
+            </h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+                <div class="artist-card glass-strong rounded-2xl overflow-hidden border border-white/20 fade-in fade-in-delay-1">
+                    <img src="https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=400&h=400&fit=crop" alt="BTS" class="artist-image">
+                    <div class="p-6">
+                        <h3 class="text-2xl sm:text-3xl font-bold mb-2 gradient-text">BTS 💜</h3>
+                        <p class="text-white/80 mb-3">방탄소년단</p>
+                        <p class="text-white/70 text-sm">글로벌 슈퍼스타, 빌보드 1위 달성, 그래미 어워드 노미네이트</p>
+                    </div>
+                </div>
+                <div class="artist-card glass-strong rounded-2xl overflow-hidden border border-white/20 fade-in fade-in-delay-2">
+                    <img src="https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=400&fit=crop" alt="BLACKPINK" class="artist-image">
+                    <div class="p-6">
+                        <h3 class="text-2xl sm:text-3xl font-bold mb-2 gradient-text">BLACKPINK 🖤</h3>
+                        <p class="text-white/80 mb-3">블랙핑크</p>
+                        <p class="text-white/70 text-sm">세계적인 걸그룹, 강렬한 퍼포먼스, 유튜브 최다 조회수 기록</p>
+                    </div>
+                </div>
+                <div class="artist-card glass-strong rounded-2xl overflow-hidden border border-white/20 fade-in fade-in-delay-3">
+                    <img src="https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=400&h=400&fit=crop" alt="NewJeans" class="artist-image">
+                    <div class="p-6">
+                        <h3 class="text-2xl sm:text-3xl font-bold mb-2 gradient-text">NewJeans 🐰</h3>
+                        <p class="text-white/80 mb-3">뉴진스</p>
+                        <p class="text-white/70 text-sm">Y2K 감성의 신세대 아이돌, 독특한 컨셉과 음악으로 주목</p>
+                    </div>
+                </div>
+                <div class="artist-card glass-strong rounded-2xl overflow-hidden border border-white/20 fade-in fade-in-delay-4">
+                    <img src="https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=400&h=400&fit=crop" alt="IVE" class="artist-image">
+                    <div class="p-6">
+                        <h3 class="text-2xl sm:text-3xl font-bold mb-2 gradient-text">IVE ⭐</h3>
+                        <p class="text-white/80 mb-3">아이브</p>
+                        <p class="text-white/70 text-sm">트렌디한 음악과 퍼포먼스, 연속 히트곡으로 인기 급상승</p>
+                    </div>
+                </div>
+                <div class="artist-card glass-strong rounded-2xl overflow-hidden border border-white/20 fade-in fade-in-delay-5">
+                    <img src="https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=400&fit=crop" alt="LE SSERAFIM" class="artist-image">
+                    <div class="p-6">
+                        <h3 class="text-2xl sm:text-3xl font-bold mb-2 gradient-text">LE SSERAFIM 🔥</h3>
+                        <p class="text-white/80 mb-3">르세라핌</p>
+                        <p class="text-white/70 text-sm">강렬한 카리스마와 실력, 독보적인 무대 매력</p>
+                    </div>
+                </div>
+                <div class="artist-card glass-strong rounded-2xl overflow-hidden border border-white/20 fade-in fade-in-delay-6">
+                    <img src="https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=400&h=400&fit=crop" alt="aespa" class="artist-image">
+                    <div class="p-6">
+                        <h3 class="text-2xl sm:text-3xl font-bold mb-2 gradient-text">aespa ✨</h3>
+                        <p class="text-white/80 mb-3">에스파</p>
+                        <p class="text-white/70 text-sm">AI 아바타와 결합한 혁신적 컨셉, 메타버스 세계관</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Trending Now Section -->
+        <section class="glass-card rounded-3xl p-8 sm:p-12 lg:p-16 mb-12 fade-in-up">
+            <h2 class="text-4xl sm:text-5xl font-bold mb-8 gradient-text section-title relative inline-block pb-4 fade-in fade-in-delay-1">
+                🔥 지금 트렌딩
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="glass-strong rounded-2xl p-6 border border-white/20 fade-in fade-in-delay-1">
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="text-3xl">🎵</span>
+                        <h3 class="text-2xl font-bold text-pink-400">신인 그룹 데뷔 러시</h3>
+                    </div>
+                    <p class="text-white/90 content-text">
+                        2024-2025년 다양한 신인 그룹들이 데뷔하며 K-POP 시장에 새로운 바람을 불어넣고 있습니다. 
+                        독특한 컨셉과 음악 스타일로 글로벌 팬들의 주목을 받고 있으며, 특히 Y2K 감성과 메타버스 컨셉을 결합한 그룹들이 큰 인기를 얻고 있습니다.
+                    </p>
+                </div>
+                <div class="glass-strong rounded-2xl p-6 border border-white/20 fade-in fade-in-delay-2">
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="text-3xl">🌏</span>
+                        <h3 class="text-2xl font-bold text-pink-400">글로벌 투어 확대</h3>
+                    </div>
+                    <p class="text-white/90 content-text">
+                        K-POP 아티스트들의 해외 시장 진출이 더욱 활발해지고 있습니다. 
+                        유럽, 남미, 중동 등 전 세계 각 지역에서 콘서트와 팬미팅이 개최되며 
+                        K-POP의 글로벌 영향력이 지속적으로 확장되고 있습니다.
+                    </p>
+                </div>
+                <div class="glass-strong rounded-2xl p-6 border border-white/20 fade-in fade-in-delay-3">
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="text-3xl">📊</span>
+                        <h3 class="text-2xl font-bold text-pink-400">차트 성과</h3>
+                    </div>
+                    <p class="text-white/90 content-text">
+                        K-POP 아티스트들이 빌보드, 스포티파이 글로벌 차트 등에서 지속적으로 좋은 성과를 내고 있습니다. 
+                        다양한 장르 실험과 고품질의 음악 제작으로 전 세계 음악 팬들의 사랑을 받고 있습니다.
+                    </p>
+                </div>
+                <div class="glass-strong rounded-2xl p-6 border border-white/20 fade-in fade-in-delay-4">
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="text-3xl">💜</span>
+                        <h3 class="text-2xl font-bold text-pink-400">팬덤 문화 확산</h3>
+                    </div>
+                    <p class="text-white/90 content-text">
+                        K-POP 팬덤 문화가 전 세계적으로 확산되며, SNS와 디지털 플랫폼을 통한 
+                        팬과 아티스트 간의 소통이 더욱 활발해지고 있습니다. 
+                        팬들이 직접 만든 콘텐츠와 커버 댄스 영상이 글로벌 트렌드를 만들어가고 있습니다.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Quick Facts Section -->
+        <section class="glass-card rounded-3xl p-8 sm:p-12 lg:p-16 mb-12 fade-in-up">
+            <h2 class="text-4xl sm:text-5xl font-bold mb-8 gradient-text section-title relative inline-block pb-4 fade-in fade-in-delay-1">
+                💡 K-POP 핵심 정보
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="glass-strong rounded-xl p-6 text-center border border-white/20 fade-in fade-in-delay-1">
+                    <div class="text-4xl font-black text-pink-400 mb-3">6위</div>
+                    <p class="text-white/90 text-lg font-semibold mb-2">세계 음악 시장</p>
+                    <p class="text-white/70 text-sm">2019년 한국은 세계 10대 음악 시장 중 6위를 차지</p>
+                </div>
+                <div class="glass-strong rounded-xl p-6 text-center border border-white/20 fade-in fade-in-delay-2">
+                    <div class="text-4xl font-black text-pink-400 mb-3">44.8%</div>
+                    <p class="text-white/90 text-lg font-semibold mb-2">성장률</p>
+                    <p class="text-white/70 text-sm">2020년 가장 빠르게 성장하는 주요 시장</p>
+                </div>
+                <div class="glass-strong rounded-xl p-6 text-center border border-white/20 fade-in fade-in-delay-3">
+                    <div class="text-4xl font-black text-pink-400 mb-3">4대</div>
+                    <p class="text-white/90 text-lg font-semibold mb-2">주요 기획사</p>
+                    <p class="text-white/70 text-sm">SM, YG, JYP, HYBE가 산업을 주도</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="text-center mt-16 py-8 relative fade-in">
+            <div class="absolute top-0 left-1/2 transform -translate-x-1/2 w-24 h-0.5 bg-gradient-to-r from-transparent via-white/30 to-transparent"></div>
+            <p class="text-white/70 text-base mb-2">
+                &copy; 2024 K-POP Hub | 트렌드와 음악을 한 곳에서
+            </p>
+            <p class="text-white/50 text-xs">
+                K-POP 팬들을 위한 종합 정보 플랫폼
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        // Intersection Observer for scroll animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const fadeInUpObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        const fadeInObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.fade-in-up').forEach(element => {
+            fadeInUpObserver.observe(element);
+        });
+
+        document.querySelectorAll('.fade-in').forEach(element => {
+            fadeInObserver.observe(element);
+        });
+
+        // Navbar scroll effect
+        const navbar = document.querySelector('.navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // Mobile menu toggle
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        
+        if (mobileMenuBtn && mobileMenu) {
+            mobileMenuBtn.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+
+            // Close mobile menu when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!mobileMenuBtn.contains(e.target) && !mobileMenu.contains(e.target)) {
+                    mobileMenu.classList.add('hidden');
+                }
+            });
+        }
+
+        // Parallax effect for floating circles
+        window.addEventListener('mousemove', (e) => {
+            const circles = document.querySelectorAll('.floating-circle');
+            const mouseX = e.clientX / window.innerWidth;
+            const mouseY = e.clientY / window.innerHeight;
+
+            circles.forEach((circle, index) => {
+                const speed = (index + 1) * 0.3;
+                const x = (mouseX - 0.5) * speed * 30;
+                const y = (mouseY - 0.5) * speed * 30;
+                circle.style.transform = `translate(${x}px, ${y}px)`;
+            });
+        });
+    </script>
+</body>
+</html>

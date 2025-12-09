@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>인기 아티스트 | K-POP Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Noto Sans KR', 'Poppins', sans-serif;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            min-height: 100vh;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        }
+
+        .glass-strong {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(30px) saturate(180%);
+            -webkit-backdrop-filter: blur(30px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.5),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(25px) saturate(180%);
+            -webkit-backdrop-filter: blur(25px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.15);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .glass-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 20px 60px 0 rgba(31, 38, 135, 0.5),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.25);
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #ff006e, #8338ec, #3a86ff, #ffbe0b);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientText 5s ease infinite;
+        }
+
+        @keyframes gradientText {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .fade-in-up {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+
+        .fade-in-up.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .fade-in {
+            opacity: 0;
+            transition: opacity 1s ease-out;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+        }
+
+        .fade-in-delay-1 { transition-delay: 0.1s; }
+        .fade-in-delay-2 { transition-delay: 0.2s; }
+        .fade-in-delay-3 { transition-delay: 0.3s; }
+        .fade-in-delay-4 { transition-delay: 0.4s; }
+        .fade-in-delay-5 { transition-delay: 0.5s; }
+        .fade-in-delay-6 { transition-delay: 0.6s; }
+
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .navbar.scrolled {
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .nav-link {
+            position: relative;
+            transition: all 0.3s ease;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%) scaleX(0);
+            width: 80%;
+            height: 2px;
+            background: linear-gradient(90deg, #ff006e, #8338ec);
+            transition: transform 0.3s ease;
+        }
+
+        .nav-link:hover::after,
+        .nav-link.active::after {
+            transform: translateX(-50%) scaleX(1);
+        }
+
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .mobile-menu {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .mobile-menu {
+                display: block;
+            }
+            .desktop-menu {
+                display: none;
+            }
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            margin-top: 0.5rem;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(30px) saturate(180%);
+            -webkit-backdrop-filter: blur(30px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 1rem;
+            padding: 0.5rem;
+            min-width: 250px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+        }
+
+        .dropdown:hover .dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-item {
+            display: block;
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            transition: all 0.2s ease;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .dropdown-item:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateX(5px);
+        }
+
+        .artist-section {
+            scroll-margin-top: 100px;
+        }
+
+        .artist-hero {
+            min-height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .artist-hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle, rgba(255, 0, 110, 0.2) 0%, transparent 70%);
+            animation: pulse 3s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+
+        .info-card {
+            transition: all 0.3s ease;
+        }
+
+        .info-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(255, 0, 110, 0.5);
+        }
+
+        .floating-circle {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            animation: floatCircle 20s infinite ease-in-out;
+            pointer-events: none;
+        }
+
+        @keyframes floatCircle {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            33% { transform: translate(30px, -30px) rotate(120deg); }
+            66% { transform: translate(-20px, 20px) rotate(240deg); }
+        }
+    </style>
+</head>
+<body class="relative overflow-x-hidden">
+    <!-- Animated Background Circles -->
+    <div class="floating-circle w-72 h-72 top-10 left-10 opacity-30"></div>
+    <div class="floating-circle w-48 h-48 top-1/2 right-20 opacity-20" style="animation-delay: 5s;"></div>
+    <div class="floating-circle w-36 h-36 bottom-20 left-1/4 opacity-25" style="animation-delay: 10s;"></div>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16 lg:h-20">
+                <!-- Logo -->
+                <a href="index.html" class="flex items-center gap-3">
+                    <img 
+                        src="https://upload.wikimedia.org/wikipedia/commons/0/09/Flag_of_South_Korea.svg" 
+                        alt="대한민국 국기" 
+                        class="w-8 h-8 sm:w-10 sm:h-10"
+                    >
+                    <span class="text-xl sm:text-2xl font-black gradient-text">K-POP HUB</span>
+                </a>
+
+                <!-- Desktop Menu -->
+                <div class="desktop-menu flex items-center gap-2 lg:gap-4">
+                    <a href="index.html" class="nav-link text-white font-medium">홈</a>
+                    <div class="dropdown relative">
+                        <a href="artists.html" class="nav-link active text-white font-medium flex items-center gap-1">
+                            인기 아티스트
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </a>
+                        <div class="dropdown-menu">
+                            <a href="artists.html#bts" class="dropdown-item flex items-center gap-3">
+                                <span class="text-2xl">💜</span>
+                                <div>
+                                    <div class="font-semibold">BTS</div>
+                                    <div class="text-xs text-white/70">방탄소년단</div>
+                                </div>
+                            </a>
+                            <a href="artists.html#blackpink" class="dropdown-item flex items-center gap-3">
+                                <span class="text-2xl">🖤</span>
+                                <div>
+                                    <div class="font-semibold">BLACKPINK</div>
+                                    <div class="text-xs text-white/70">블랙핑크</div>
+                                </div>
+                            </a>
+                            <a href="artists.html#newjeans" class="dropdown-item flex items-center gap-3">
+                                <span class="text-2xl">🐰</span>
+                                <div>
+                                    <div class="font-semibold">NewJeans</div>
+                                    <div class="text-xs text-white/70">뉴진스</div>
+                                </div>
+                            </a>
+                            <a href="artists.html#ive" class="dropdown-item flex items-center gap-3">
+                                <span class="text-2xl">⭐</span>
+                                <div>
+                                    <div class="font-semibold">IVE</div>
+                                    <div class="text-xs text-white/70">아이브</div>
+                                </div>
+                            </a>
+                            <a href="artists.html#lesserafim" class="dropdown-item flex items-center gap-3">
+                                <span class="text-2xl">🔥</span>
+                                <div>
+                                    <div class="font-semibold">LE SSERAFIM</div>
+                                    <div class="text-xs text-white/70">르세라핌</div>
+                                </div>
+                            </a>
+                            <a href="artists.html#aespa" class="dropdown-item flex items-center gap-3">
+                                <span class="text-2xl">✨</span>
+                                <div>
+                                    <div class="font-semibold">aespa</div>
+                                    <div class="text-xs text-white/70">에스파</div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <button id="mobile-menu-btn" class="mobile-menu lg:hidden text-white p-2">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Mobile Menu -->
+            <div id="mobile-menu" class="mobile-menu hidden lg:hidden pb-4">
+                <div class="flex flex-col gap-2 mt-2">
+                    <a href="index.html" class="nav-link text-white font-medium">홈</a>
+                    <div class="border-t border-white/20 pt-2 mt-2">
+                        <div class="text-white/70 text-sm font-semibold mb-2 px-4">인기 아티스트</div>
+                        <a href="artists.html#bts" class="nav-link text-white/90 text-sm flex items-center gap-2 px-4">
+                            <span>💜</span> BTS
+                        </a>
+                        <a href="artists.html#blackpink" class="nav-link text-white/90 text-sm flex items-center gap-2 px-4">
+                            <span>🖤</span> BLACKPINK
+                        </a>
+                        <a href="artists.html#newjeans" class="nav-link text-white/90 text-sm flex items-center gap-2 px-4">
+                            <span>🐰</span> NewJeans
+                        </a>
+                        <a href="artists.html#ive" class="nav-link text-white/90 text-sm flex items-center gap-2 px-4">
+                            <span>⭐</span> IVE
+                        </a>
+                        <a href="artists.html#lesserafim" class="nav-link text-white/90 text-sm flex items-center gap-2 px-4">
+                            <span>🔥</span> LE SSERAFIM
+                        </a>
+                        <a href="artists.html#aespa" class="nav-link text-white/90 text-sm flex items-center gap-2 px-4">
+                            <span>✨</span> aespa
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-12 relative z-10 pt-24 lg:pt-28">
+        <!-- Page Header -->
+        <header class="text-center mb-16 fade-in-up" style="animation: fadeInUp 1s ease-out 0.2s forwards;">
+            <h1 class="text-5xl sm:text-6xl md:text-7xl font-black gradient-text mb-4">
+                인기 아티스트
+            </h1>
+            <p class="text-xl sm:text-2xl text-white/90 font-light">
+                K-POP을 이끄는 최고의 아티스트들을 만나보세요
+            </p>
+        </header>
+
+        <!-- Quick Navigation -->
+        <div class="glass-card rounded-3xl p-6 mb-12 fade-in-up">
+            <h2 class="text-2xl font-bold text-white mb-4">빠른 이동</h2>
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+                <a href="#bts" class="glass-strong rounded-xl p-3 text-center border border-white/20 hover:border-pink-400 transition-all fade-in fade-in-delay-1">
+                    <div class="text-2xl mb-1">💜</div>
+                    <div class="text-white font-semibold text-sm">BTS</div>
+                </a>
+                <a href="#blackpink" class="glass-strong rounded-xl p-3 text-center border border-white/20 hover:border-pink-400 transition-all fade-in fade-in-delay-2">
+                    <div class="text-2xl mb-1">🖤</div>
+                    <div class="text-white font-semibold text-sm">BLACKPINK</div>
+                </a>
+                <a href="#newjeans" class="glass-strong rounded-xl p-3 text-center border border-white/20 hover:border-pink-400 transition-all fade-in fade-in-delay-3">
+                    <div class="text-2xl mb-1">🐰</div>
+                    <div class="text-white font-semibold text-sm">NewJeans</div>
+                </a>
+                <a href="#ive" class="glass-strong rounded-xl p-3 text-center border border-white/20 hover:border-pink-400 transition-all fade-in fade-in-delay-4">
+                    <div class="text-2xl mb-1">⭐</div>
+                    <div class="text-white font-semibold text-sm">IVE</div>
+                </a>
+                <a href="#lesserafim" class="glass-strong rounded-xl p-3 text-center border border-white/20 hover:border-pink-400 transition-all fade-in fade-in-delay-5">
+                    <div class="text-2xl mb-1">🔥</div>
+                    <div class="text-white font-semibold text-sm">LE SSERAFIM</div>
+                </a>
+                <a href="#aespa" class="glass-strong rounded-xl p-3 text-center border border-white/20 hover:border-pink-400 transition-all fade-in fade-in-delay-6">
+                    <div class="text-2xl mb-1">✨</div>
+                    <div class="text-white font-semibold text-sm">aespa</div>
+                </a>
+            </div>
+        </div>
+
+        <!-- BTS Section -->
+        <section id="bts" class="artist-section glass-card rounded-3xl p-8 sm:p-12 lg:p-16 mb-12 fade-in-up">
+            <div class="artist-hero rounded-2xl mb-8 relative">
+                <div class="relative z-10">
+                    <h2 class="text-5xl sm:text-6xl font-black gradient-text mb-4">BTS 💜</h2>
+                    <p class="text-2xl text-white/90 font-light">방탄소년단</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                <div class="glass-strong rounded-2xl p-6 border border-white/20 info-card fade-in fade-in-delay-1">
+                    <h3 class="text-2xl font-bold text-pink-400 mb-4">📋 기본 정보</h3>
+                    <ul class="space-y-3 text-white/90">
+                        <li><strong class="text-pink-400">데뷔:</strong> 2013년 6월 13일</li>
+                        <li><strong class="text-pink-400">소속사:</strong> HYBE Corporation (Big Hit Music)</li>
+                        <li><strong class="text-pink-400">멤버:</strong> 진, 슈가, 제이홉, RM, 지민, V, 정국 (7명)</li>
+                        <li><strong class="text-pink-400">팬클럽:</strong> ARMY (아미)</li>
+                        <li><strong class="text-pink-400">대표 색상:</strong> 보라색 💜</li>
+                    </ul>
+                </div>
+
+                <div class="glass-strong rounded-2xl p-6 border border-white/20 info-card fade-in fade-in-delay-2">
+                    <h3 class="text-2xl font-bold text-pink-400 mb-4">🏆 주요 성과</h3>
+                    <ul class="space-y-3 text-white/90">
+                        <li>빌보드 Hot 100 1위 (Dynamite, Butter, Permission to Dance)</li>
+                        <li>그래미 어워드 노미네이트 (3회)</li>
+                        <li>빌보드 200 1위 앨범 6장</li>
+                        <li>전 세계 투어 매진 기록</li>
+                        <li>유엔 총회 연설 (3회)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="glass-strong rounded-2xl p-6 border border-white/20 mb-8 fade-in fade-in-delay-3">
+                <h3 class="text-2xl font-bold text-pink-400 mb-4">🎵 대표 히트곡</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="flex items-center gap-3 p-3 rounded-lg bg-white/5">
+                        <span class="text-pink-400 font-bold">1.</span>
+                        <a href="https://www.youtube.com/watch?v=VDd9gN8eS-s" target="_blank" class="text-white hover:text-pink-400 transition-colors flex-1">Dynamite</a>
+                    </div>
+                    <div class="flex items-center gap-3 p-3 rounded-lg bg-white/5">
+                        <span class="text-pink-400 font-bold">2.</span>
+                        <a href="https://www.youtube.com/watch?v=WMweEpGlu_U" target="_blank" class="text-white hover:text-pink-400 transition-colors flex-1">Butter</a>
+                    </div>
+                    <div class="flex items-center gap-3 p-3 rounded-lg bg-white/5">
+                        <span class="text-pink-400 font-bold">3.</span>
+                        <a href="https://www.youtube.com/watch?v=gdZLi9oWNZg" target="_blank" class="text-white hover:text-pink-400 transition-colors flex-1">Permission to Dance</a>
+                    </div>
+                    <div class="flex items-center gap-3 p-3 rounded-lg bg-white/5">
+                        <span class="text-pink-400 font-bold">4.</span>
+                        <a href="https://www.youtube.com/watch?v=kTlv5_Bs8aw" target="_blank" class="text-white hover:text-pink-400 transition-colors flex-1">My Universe (with Coldplay)</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-strong rounded-2xl p-6 border border-white/20 fade-in fade-in-delay-4">
+                <h3 class="text-2xl font-bold text-pink-400 mb-4">💜 ARMY를 위한 특별 정보</h3>
+                <div class="space-y-4 text-white/90">
+                    <p>
+                        BTS는 "Beyond The Scene"의 약자로, 10대와 20대를 넘어 모든 세대에게 사랑받는 글로벌 슈퍼스타입니다. 
+                        진정성 있는 메시지와 뛰어난 음악성으로 전 세계 수억 명의 ARMY와 함께하고 있습니다.
+                    </p>
+                    <p>
+                        각 멤버는 개인 활동도 활발히 펼치며, 솔로 앨범과 콜라보레이션으로도 큰 성공을 거두고 있습니다. 
+                        특히 정국, 지민, V, 진의 솔로 활동이 주목받고 있으며, 슈가는 프로듀서로서도 인정받고 있습니다.
+                    </p>
+                    <p>
+                        BTS는 음악뿐만 아니라 사회적 메시지 전달에도 앞장서며, "Love Myself" 캠페인과 유엔 총회 연설을 통해 
+                        긍정적인 영향력을 발휘하고 있습니다.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- BLACKPINK Section -->
+        <section id="blackpink" class="artist-section glass-card rounded-3xl p-8 sm:p-12 lg:p-16 mb-12 fade-in-up">
+            <div class="artist-hero rounded-2xl mb-8 relative">
+                <div class="relative z-10">
+                    <h2 class="text-5xl sm:text-6xl font-black gradient-text mb-4">BLACKPINK 🖤</h2>
+                    <p class="text-2xl text-white/90 font-light">블랙핑크</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                <div class="glass-strong rounded-2xl p-6 border border-white/20 info-card fade-in fade-in-delay-1">
+                    <h3 class="text-2xl font-bold text-pink-400 mb-4">📋 기본 정보</h3>
+                    <ul class="space-y-3 text-white/90">
+                        <li><strong class="text-pink-400">데뷔:</strong> 2016년 8월 8일</li>
+                        <li><strong class="text-pink-400">소속사:</strong> YG Entertainment</li>
+                        <li><strong class="text-pink-400">멤버:</strong> 지수, 제니, 로제, 리사 (4명)</li>
+                        <li><strong class="text-pink-400">팬클럽:</strong> BLINK (블링크)</li>
+                        <li><strong class="text-pink-400">대표 색상:</strong> 검은색과 핑크 🖤💗</li>
+                    </ul>
+                </div>
+
+                <div class="glass-strong rounded-2xl p-6 border border-white/20 info-card fade-in fade-in-delay-2">
+                    <h3 class="text-2xl font-bold text-pink-400 mb-4">🏆 주요 성과</h3>
+                    <ul class="space-y-3 text-white/90">
+                        <li>빌보드 Hot 100 진입 (Kill This Love, How You Like That)</li>
+                        <li>유튜브 최다 조회수 뮤직비디오 보유</li>
+                        <li>코첼라 페스티벌 헤드라이너 (최초 K-POP 걸그룹)</li>
+                        <li>월드투어 매진 기록</li>
+                        <li>각 멤버 솔로 활동 성공</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="glass-strong rounded-2xl p-6 border border-white/20 mb-8 fade-in fade-in-delay-3">
+                <h3 class="text-2xl font-bold text-pink-400 mb-4">🎵 대표 히트곡</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="flex items-center gap-3 p-3 rounded-lg bg-white/5">
+                        <span class="text-pink-400 font-bold">1.</span>
+                        <a href="https://www.youtube.com/watch?v=ioNng23DkIM" target="_blank" class="text-white hover:text-pink-400 transition-colors flex-1">How You Like That</a>
+                    </div>
+                    <div class="flex items-center gap-3 p-3 rounded-lg bg-white/5">
+                        <span class="text-pink-400 font-bold">2.</span>
+                        <a href="https://www.youtube.com/watch?v=9pdj4iEdc1I" target="_blank" class="text-white hover:text-pink-400 transition-colors flex-1">Pink Venom</a>
+                    </div>
+                    <div class="flex items-center gap-3 p-3 rounded-lg bg-white/5">
+                        <span class="text-pink-400 font-bold">3.</span>
+                        <a href="https://www.youtube.com/watch?v=2S24-y0Ij3Y" target="_blank" class="text-white hover:text-pink-400 transition-colors flex-1">Kill This Love</a>
+                    </div>
+                    <div class="flex items-center gap-3 p-3 rounded-lg bg-white/5">
+                        <span class="text-pink-400 font-bold">4.</span>
+                        <a href="https://www.youtube.com/watch?v=IHNzOHi8sJs" target="_blank" class="text-white hover:text-pink-400 transition-colors flex-1">DDU-DU DDU-DU</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-strong rounded-2xl p-6 border border-white/20 fade-in fade-in-delay-4">
+                <h3 class="text-2xl font-bold text-pink-400 mb-4">🖤 BLINK를 위한 특별 정보</h3>
+                <div class="space-y-4 text-white/90">
+                    <p>
+                        BLACKPINK는 "BLACK"과 "PINK"의 조합으로, 강렬함과 여성스러움을 동시에 표현하는 독특한 컨셉을 가진 걸그룹입니다. 
+                        강렬한 퍼포먼스와 독보적인 비주얼로 전 세계 팬들의 사랑을 받고 있습니다.
+                    </p>
+                    <p>
+                        각 멤버는 개성 있는 솔로 활동으로도 큰 성공을 거두고 있습니다. 제니의 솔로곡, 로제의 앨범, 
+                        리사의 솔로 활동, 지수의 드라마와 앨범 등 다방면에서 활약하고 있습니다.
+                    </p>
+                    <p>
+                        BLACKPINK는 패션 브랜드와의 콜라보레이션, 뷰티 라인 출시 등으로 K-POP을 넘어 글로벌 아이콘으로 자리잡았습니다. 
+                        특히 각 멤버는 세계적인 패션 하우스의 앰버서더로도 활동하고 있습니다.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- NewJeans Section -->
+        <section id="newjeans" class="artist-section glass-card rounded-3xl p-8 sm:p-12 lg:p-16 mb-12 fade-in-up">
+            <div class="artist-hero rounded-2xl mb-8 relative">
+                <div class="relative z-10">
+                    <h2 class="text-5xl sm:text-6xl font-black gradient-text mb-4">NewJeans 🐰</h2>
+                    <p class="text-2xl text-white/90 font-light">뉴진스</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                <div class="glass-strong rounded-2xl p-6 border border-white/20 info-card fade-in fade-in-delay-1">
+                    <h3 class="text-2xl font-bold text-pink-400 mb-4">📋 기본 정보</h3>
+                    <ul class="space-y-3 text-white/90">
+                        <li><strong class="text-pink-400">데뷔:</strong> 2022년 7월 22일</li>
+                        <li><strong class="text-pink-400">소속사:</strong> ADOR (HYBE 산하 레이블)</li>
+                        <li><strong class="text-pink-400">멤버:</strong> 민지, 하니, 다니엘, 해린, 혜인 (5명)</li>
+                        <li><strong class="text-pink-400">팬클럽:</strong> Bunnies (버니즈)</li>
+                        <li><strong class="text-pink-400">대표 색상:</strong> 토끼 컨셉 🐰</li>
+                    </ul>
+                </div>
+
+                <div class="glass-strong rounded-2xl p-6 border border-white/20 info-card fade-in fade-in-delay-2">
+                    <h3 class="text-2xl font-bold text-pink-400 mb-4">🏆 주요 성과</h3>
+                    <ul class="space-y-3 text-white/90">
+                        <li>데뷔 앨범으로 멜론 차트 1위</li>
+                        <li>빠른 성장으로 주목받는 4세대 아이돌</li>
+                        <li>Y2K 감성으로 트렌드 선도</li>
+                        <li>글로벌 팬덤 빠른 확장</li>
+                        <li>다양한 브랜드 협업</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="glass-strong rounded-2xl p-6 border border-white/20 mb-8 fade-in fade-in-delay-3">
+                <h3 class="text-2xl font-bold text-pink-400 mb-4">🎵 대표 히트곡</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="flex items-center gap-3 p-3 rounded-lg bg-white/5">
+                        <span class="text-pink-400 font-bold">1.</span>
+                        <a href="https://www.youtube.com/watch?v=ArmDp-zijuc" target="_blank" class="text-white hover:text-pink-400 transition-colors flex-1">Hype Boy</a>
+                    </div>
+                    <div class="flex items-center gap-3 p-3 rounded-lg bg-white/5">
+                        <span class="text-pink-400 font-bold">2.</span>
+                        <a href="https://www.youtube.com/watch?v=XsX3ATc3FbA" target="_blank" class="text-white hover:text-pink-400 transition-colors flex-1">OMG</a>
+                    </div>
+                    <div class="flex items-center gap-3 p-3 rounded-lg bg-white/5">
+                        <span class="text-pink-400 font-bold">3.</span>
+                        <a href="https://www.youtube.com/watch?v=VOmIplFAGeg" target="_blank" class="text-white hover:text-pink-400 transition-colors flex-1">Attention</a>
+                    </div>
+                    <div class="flex items-center gap-3 p-3 rounded-lg bg-white/5">
+                        <span class="text-pink-400 font-bold">4.</span>
+                        <a href="https://www.youtube.com/watch?v=Ast89kDh3XY" target="_blank" class="text-white hover:text-pink-400 transition-colors flex-1">Ditto</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-strong rounded-2xl p-6 border border-white/20 fade-in fade-in-delay-4">
+                <h3 class="text-2xl font-bold text-pink-400 mb-4">🐰 Bunnies를 위한 특별 정보</h3>
+                <div class="space-y-4 text-white/90">
+                    <p>
+                        NewJeans는 "새로운 청바지"처럼 시대를 초월한 클래식함을 의미하며, Y2K 감성과 현대적 사운드를 결합한 
+                        독특한 컨셉으로 데뷔와 동시에 큰 화제를 모았습니다.
+                    </p>
+                    <p>
+                        데뷔 전부터 "어텐션" 티저로 화제를 모았으며, 데뷔 앨범의 모든 수록곡이 차트 상위권에 진입하는 
+                        기록을 세웠습니다. 특히 "Hype Boy"는 긴 시간 동안 인기를 유지하며 "롱런 곡"으로 평가받고 있습니다.
+                    </p>
+                    <p>
+                        멤버들은 각자 개성 있는 매력을 가지고 있으며, 자연스러운 퍼포먼스와 친근한 이미지로 
+                        MZ 세대의 사랑을 받고 있습니다. 패션과 뷰티 트렌드에도 큰 영향을 미치고 있습니다.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- IVE Section -->
+        <section id="ive" class="artist-section glass-card rounded-3xl p-8 sm:p-12 lg:p-16 mb-12 fade-in-up">
+            <div class="artist-hero rounded-2xl mb-8 relative">
+                <div class="relative z-10">
+                    <h2 class="text-5xl sm:text-6xl font-black gradient-text mb-4">IVE ⭐</h2>
+                    <p class="text-2xl text-white/90 font-light">아이브</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                <div class="glass-strong rounded-2xl p-6 border border-white/20 info-card fade-in fade-in-delay-1">
+                    <h3 class="text-2xl font-bold text-pink-400 mb-4">📋 기본 정보</h3>
+                    <ul class="space-y-3 text-white/90">
+                        <li><strong class="text-pink-400">데뷔:</strong> 2021년 12월 1일</li>
+                        <li><strong class="text-pink-400">소속사:</strong> Starship Entertainment</li>
+                        <li><strong class="text-pink-400">멤버:</strong> 가을, 안유진, 레이, 장원영, 리즈, 이서 (6명)</li>
+                        <li><strong class="text-pink-400">팬클럽:</strong> DIVEs (다이브)</li>
+                        <li><strong class="text-pink-400">대표 색상:</strong> 별 컨셉 ⭐</li>
+                    </ul>
+                </div>
+
+                <div class="glass-strong rounded-2xl p-6 border border-white/20 info-card fade-in fade-in-delay-2">
+                    <h3 class="text-2xl font-bold text-pink-400 mb-4">🏆 주요 성과</h3>
+                    <ul class="space-y-3 text-white/90">
+                        <li>데뷔곡 "ELEVEN"으로 음악 방송 1위</li>
+                        <li>연속 히트곡으로 "히트곡 제조기"로 불림</li>
+                        <li>빠른 성장으로 4세대 대표 걸그룹으로 자리잡음</li>
+                        <li>글로벌 팬덤 확장</li>
+                        <li>다양한 브랜드 모델 활동</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="glass-strong rounded-2xl p-6 border border-white/20 mb-8 fade-in fade-in-delay-3">
+                <h3 class="text-2xl font-bold text-pink-400 mb-4">🎵 대표 히트곡</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="flex items-center gap-3 p-3 rounded-lg bg-white/5">
+                        <span class="text-pink-400 font-bold">1.</span>
+                        <a href="https://www.youtube.com/watch?v=fHONcsP_CMs" target="_blank" class="text-white hover:text-pink-400 transition-colors flex-1">Love Dive</a>
+                    </div>
+                    <div class="flex items-center gap-3 p-3 rounded-lg bg-white/5">
+                        <span class="text-pink-400 font-bold">2.</span>
+                        <a href="https://www.youtube.com/watch?v=6ZUIwZ3f1ZCc" target="_blank" class="text-white hover:text-pink-400 transition-colors flex-1">I AM</a>
+                    </div>
+                    <div class="flex items-center gap-3 p-3 rounded-lg bg-white/5">
+                        <span class="text-pink-400 font-bold">3.</span>
+                        <a href="https://www.youtube.com/watch?v=Y8JFxS1HlDo" target="_blank" class="text-white hover:text-pink-400 transition-colors flex-1">ELEVEN</a>
+                    </div>
+                    <div class="flex items-center gap-3 p-3 rounded-lg bg-white/5">
+                        <span class="text-pink-400 font-bold">4.</span>
+                        <a href="https://www.youtube.com/watch?v=6ZUIwZ3f1ZCc" target="_blank" class="text-white hover:text-pink-400 transition-colors flex-1">After LIKE</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-strong rounded-2xl p-6 border border-white/20 fade-in fade-in-delay-4">
+                <h3 class="text-2xl font-bold text-pink-400 mb-4">⭐ DIVEs를 위한 특별 정보</h3>
+                <div class="space-y-4 text-white/90">
+                    <p>
+                        IVE는 "I HAVE"의 줄임말로, 자신이 원하는 것을 가진 자존감 있는 여성의 이미지를 표현합니다. 
+                        데뷔부터 연속 히트곡을 내며 "히트곡 제조기"라는 별명을 얻었습니다.
+                    </p>
+                    <p>
+                        안유진과 장원영은 IZ*ONE 출신으로 이미 팬층을 확보한 상태에서 데뷔했으며, 
+                        나머지 멤버들도 각자 개성 있는 매력으로 빠르게 인기를 얻었습니다.
+                    </p>
+                    <p>
+                        IVE의 음악은 자신감 있고 당당한 메시지를 담고 있으며, 세련된 비주얼과 퍼포먼스로 
+                        전 세계 팬들의 사랑을 받고 있습니다. 특히 "Love Dive"와 "I AM"은 긴 시간 동안 차트 상위권을 유지했습니다.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- LE SSERAFIM Section -->
+        <section id="lesserafim" class="artist-section glass-card rounded-3xl p-8 sm:p-12 lg:p-16 mb-12 fade-in-up">
+            <div class="artist-hero rounded-2xl mb-8 relative">
+                <div class="relative z-10">
+                    <h2 class="text-5xl sm:text-6xl font-black gradient-text mb-4">LE SSERAFIM 🔥</h2>
+                    <p class="text-2xl text-white/90 font-light">르세라핌</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                <div class="glass-strong rounded-2xl p-6 border border-white/20 info-card fade-in fade-in-delay-1">
+                    <h3 class="text-2xl font-bold text-pink-400 mb-4">📋 기본 정보</h3>
+                    <ul class="space-y-3 text-white/90">
+                        <li><strong class="text-pink-400">데뷔:</strong> 2022년 5월 2일</li>
+                        <li><strong class="text-pink-400">소속사:</strong> SOURCE MUSIC (HYBE 산하)</li>
+                        <li><strong class="text-pink-400">멤버:</strong> 김채원, 사쿠라, 허윤진, 카즈하, 홍은채 (5명)</li>
+                        <li><strong class="text-pink-400">팬클럽:</strong> FEARNOT (피어낫)</li>
+                        <li><strong class="text-pink-400">대표 색상:</strong> 불꽃 컨셉 🔥</li>
+                    </ul>
+                </div>
+
+                <div class="glass-strong rounded-2xl p-6 border border-white/20 info-card fade-in fade-in-delay-2">
+                    <h3 class="text-2xl font-bold text-pink-400 mb-4">🏆 주요 성과</h3>
+                    <ul class="space-y-3 text-white/90">
+                        <li>데뷔 앨범으로 음악 방송 1위</li>
+                        <li>강렬한 퍼포먼스로 주목받는 4세대 걸그룹</li>
+                        <li>글로벌 팬덤 빠른 확장</li>
+                        <li>다양한 브랜드 협업</li>
+                        <li>독보적인 무대 매력</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="glass-strong rounded-2xl p-6 border border-white/20 mb-8 fade-in fade-in-delay-3">
+                <h3 class="text-2xl font-bold text-pink-400 mb-4">🎵 대표 히트곡</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="flex items-center gap-3 p-3 rounded-lg bg-white/5">
+                        <span class="text-pink-400 font-bold">1.</span>
+                        <a href="https://www.youtube.com/watch?v=ru3gH27Fn6E" target="_blank" class="text-white hover:text-pink-400 transition-colors flex-1">UNFORGIVEN</a>
+                    </div>
+                    <div class="flex items-center gap-3 p-3 rounded-lg bg-white/5">
+                        <span class="text-pink-400 font-bold">2.</span>
+                        <a href="https://www.youtube.com/watch?v=ArmDp-zijuc" target="_blank" class="text-white hover:text-pink-400 transition-colors flex-1">ANTIFRAGILE</a>
+                    </div>
+                    <div class="flex items-center gap-3 p-3 rounded-lg bg-white/5">
+                        <span class="text-pink-400 font-bold">3.</span>
+                        <a href="https://www.youtube.com/watch?v=YQ8F2BwvxKM" target="_blank" class="text-white hover:text-pink-400 transition-colors flex-1">FEARLESS</a>
+                    </div>
+                    <div class="flex items-center gap-3 p-3 rounded-lg bg-white/5">
+                        <span class="text-pink-400 font-bold">4.</span>
+                        <a href="https://www.youtube.com/watch?v=ArmDp-zijuc" target="_blank" class="text-white hover:text-pink-400 transition-colors flex-1">EASY</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-strong rounded-2xl p-6 border border-white/20 fade-in fade-in-delay-4">
+                <h3 class="text-2xl font-bold text-pink-400 mb-4">🔥 FEARNOT를 위한 특별 정보</h3>
+                <div class="space-y-4 text-white/90">
+                    <p>
+                        LE SSERAFIM은 "I'M FEARLESS"를 거꾸로 읽은 것으로, 두려움 없는 강인한 의지를 표현합니다. 
+                        강렬한 카리스마와 뛰어난 실력으로 데뷔와 동시에 큰 주목을 받았습니다.
+                    </p>
+                    <p>
+                        사쿠라와 김채원은 IZ*ONE 출신으로 이미 글로벌 팬층을 확보했으며, 
+                        허윤진, 카즈하, 홍은채는 각자 독특한 매력으로 빠르게 인기를 얻었습니다.
+                    </p>
+                    <p>
+                        LE SSERAFIM의 음악은 자신감 있고 도전적인 메시지를 담고 있으며, 
+                        특히 "ANTIFRAGILE"과 "UNFORGIVEN"은 강렬한 퍼포먼스와 함께 큰 인기를 얻었습니다. 
+                        무대 위에서의 카리스마가 매우 뛰어나며, 라이브 실력도 인정받고 있습니다.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- aespa Section -->
+        <section id="aespa" class="artist-section glass-card rounded-3xl p-8 sm:p-12 lg:p-16 mb-12 fade-in-up">
+            <div class="artist-hero rounded-2xl mb-8 relative">
+                <div class="relative z-10">
+                    <h2 class="text-5xl sm:text-6xl font-black gradient-text mb-4">aespa ✨</h2>
+                    <p class="text-2xl text-white/90 font-light">에스파</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                <div class="glass-strong rounded-2xl p-6 border border-white/20 info-card fade-in fade-in-delay-1">
+                    <h3 class="text-2xl font-bold text-pink-400 mb-4">📋 기본 정보</h3>
+                    <ul class="space-y-3 text-white/90">
+                        <li><strong class="text-pink-400">데뷔:</strong> 2020년 11월 17일</li>
+                        <li><strong class="text-pink-400">소속사:</strong> SM Entertainment</li>
+                        <li><strong class="text-pink-400">멤버:</strong> 카리나, 지젤, 윈터, 닝닝 (4명)</li>
+                        <li><strong class="text-pink-400">팬클럽:</strong> MY (마이)</li>
+                        <li><strong class="text-pink-400">대표 색상:</strong> 메타버스 컨셉 ✨</li>
+                    </ul>
+                </div>
+
+                <div class="glass-strong rounded-2xl p-6 border border-white/20 info-card fade-in fade-in-delay-2">
+                    <h3 class="text-2xl font-bold text-pink-400 mb-4">🏆 주요 성과</h3>
+                    <ul class="space-y-3 text-white/90">
+                        <li>빌보드 Hot 100 진입 (Next Level)</li>
+                        <li>메타버스 컨셉으로 혁신적인 아이돌로 주목</li>
+                        <li>AI 아바타와의 결합으로 독특한 세계관 구축</li>
+                        <li>글로벌 팬덤 확장</li>
+                        <li>다양한 브랜드 협업</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="glass-strong rounded-2xl p-6 border border-white/20 mb-8 fade-in fade-in-delay-3">
+                <h3 class="text-2xl font-bold text-pink-400 mb-4">🎵 대표 히트곡</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="flex items-center gap-3 p-3 rounded-lg bg-white/5">
+                        <span class="text-pink-400 font-bold">1.</span>
+                        <a href="https://www.youtube.com/watch?v=4TWR90KUlWk" target="_blank" class="text-white hover:text-pink-400 transition-colors flex-1">Next Level</a>
+                    </div>
+                    <div class="flex items-center gap-3 p-3 rounded-lg bg-white/5">
+                        <span class="text-pink-400 font-bold">2.</span>
+                        <a href="https://www.youtube.com/watch?v=4TWR90KUlWk" target="_blank" class="text-white hover:text-pink-400 transition-colors flex-1">Savage</a>
+                    </div>
+                    <div class="flex items-center gap-3 p-3 rounded-lg bg-white/5">
+                        <span class="text-pink-400 font-bold">3.</span>
+                        <a href="https://www.youtube.com/watch?v=4TWR90KUlWk" target="_blank" class="text-white hover:text-pink-400 transition-colors flex-1">Girls</a>
+                    </div>
+                    <div class="flex items-center gap-3 p-3 rounded-lg bg-white/5">
+                        <span class="text-pink-400 font-bold">4.</span>
+                        <a href="https://www.youtube.com/watch?v=4TWR90KUlWk" target="_blank" class="text-white hover:text-pink-400 transition-colors flex-1">Spicy</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-strong rounded-2xl p-6 border border-white/20 fade-in fade-in-delay-4">
+                <h3 class="text-2xl font-bold text-pink-400 mb-4">✨ MY를 위한 특별 정보</h3>
+                <div class="space-y-4 text-white/90">
+                    <p>
+                        aespa는 "Avatar X Experience"를 의미하며, 각 멤버마다 AI 아바타(AE)가 존재하는 
+                        혁신적인 메타버스 컨셉을 가진 걸그룹입니다. "KWANGYA"라는 독특한 세계관을 구축했습니다.
+                    </p>
+                    <p>
+                        "Next Level"은 데뷔 후 첫 대히트곡으로, 빌보드 Hot 100에 진입하며 
+                        aespa의 글로벌 인지도를 높였습니다. 이후 "Savage", "Girls" 등 연속 히트곡을 내며 
+                        안정적인 인기를 유지하고 있습니다.
+                    </p>
+                    <p>
+                        각 멤버는 뛰어난 실력을 보유하고 있으며, 특히 카리나의 댄스, 윈터의 보컬, 
+                        지젤의 랩, 닝닝의 고음 실력이 주목받고 있습니다. 메타버스와 K-POP을 결합한 
+                        독특한 컨셉으로 미래형 아이돌로 평가받고 있습니다.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="text-center mt-16 py-8 relative fade-in">
+            <div class="absolute top-0 left-1/2 transform -translate-x-1/2 w-24 h-0.5 bg-gradient-to-r from-transparent via-white/30 to-transparent"></div>
+            <p class="text-white/70 text-base mb-2">
+                &copy; 2024 K-POP Hub | 트렌드와 음악을 한 곳에서
+            </p>
+            <p class="text-white/50 text-xs">
+                K-POP 팬들을 위한 종합 정보 플랫폼
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        // Navbar scroll effect
+        const navbar = document.querySelector('.navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // Mobile menu toggle
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        
+        if (mobileMenuBtn && mobileMenu) {
+            mobileMenuBtn.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!mobileMenuBtn.contains(e.target) && !mobileMenu.contains(e.target)) {
+                    mobileMenu.classList.add('hidden');
+                }
+            });
+        }
+
+        // Intersection Observer for scroll animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const fadeInUpObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        const fadeInObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.fade-in-up').forEach(element => {
+            fadeInUpObserver.observe(element);
+        });
+
+        document.querySelectorAll('.fade-in').forEach(element => {
+            fadeInObserver.observe(element);
+        });
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+
